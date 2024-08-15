@@ -1,0 +1,3 @@
+import couchpup
+
+couchpup.main()

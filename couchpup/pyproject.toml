@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "couchpup"
+version = "0.0.0"
+description = "flyio daemon for couchdb"
+authors = ["Jamie Bliss <jamie@ivyleav.es>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+chaise = "^0.2.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
