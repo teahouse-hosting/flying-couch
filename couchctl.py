@@ -7,7 +7,6 @@ Management command for flying couch instances.
 import argparse
 import json
 import logging
-import os
 import subprocess
 
 
@@ -20,15 +19,17 @@ def flyctl(*cmd):
     # not as soon as it will be, but Jamie thinks it'll never split a flag and
     # an argument, and it'll always be before a --.
     for i, bit in enumerate(cmd):
-        if bit.startswith('-'):
-            cmd = [*cmd[:i], '--json', *cmd[i:]]
+        if bit.startswith("-"):
+            cmd = [*cmd[:i], "--json", *cmd[i:]]
             break
     else:
-        cmd = [*cmd, '--json']
+        cmd = [*cmd, "--json"]
     proc = subprocess.run(
-        ['flyctl', '--json', '', *cmd],
-        stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
-        text=True, check=True
+        ["flyctl", "--json", "", *cmd],
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+        text=True,
+        check=True,
     )
     # FIXME: Redirect stderr into logging
     # FIXME: Allow stdin
@@ -89,5 +90,5 @@ def main():
     args.func(args)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
