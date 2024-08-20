@@ -7,7 +7,7 @@
 # primary_region = '...'
 
 [build]
-  image = 'docker.io/library/couchdb:3'
+  dockerfile = "Dockerfile"
 
 [http_service]
   processes = ['app']
