@@ -1,16 +1,20 @@
-name: Image
+name: CI
 
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-on:
-  push:
-
+on: [push]
 
 jobs:
-  build:
+  pre-commit:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+      - uses: teahouse-hosting/pre-commit@main
+
+  docker:
     runs-on: ubuntu-latest
 
     steps:
