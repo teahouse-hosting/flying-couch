@@ -30,4 +30,3 @@
 [mounts]
   source = "couch-data"
   destination = "/opt/couchdb/data"
-

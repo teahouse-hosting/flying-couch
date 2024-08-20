@@ -15,7 +15,7 @@ def flyctl(*cmd):
     """
     Call flyctl in JSON mode
     """
-    # --json isn't a global flag, so we have to add it after the subcommand. We 
+    # --json isn't a global flag, so we have to add it after the subcommand. We
     # do this by looking for the first - arg and adding it before then. That's
     # not as soon as it will be, but Jamie thinks it'll never split a flag and
     # an argument, and it'll always be before a --.

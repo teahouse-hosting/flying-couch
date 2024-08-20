@@ -4,9 +4,9 @@ Magical CouchDB on fly.io
 The app itself will look for app peers and automatically set up a replication
 network.
 
-The use of private networking is strongly encouraged, and fly has 
+The use of private networking is strongly encouraged, and fly has
 [several features](https://fly.io/docs/networking/private-networking/) to help
-with accessibility. In particular, the use of 
+with accessibility. In particular, the use of
 [flycast](https://fly.io/docs/networking/flycast/) is probably best for you.
 
 
