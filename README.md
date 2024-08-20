@@ -19,3 +19,17 @@ time.)
 
 `couchctl` is a wrapper around `flyctl`, so you need to have `flyctl` installed
 and authenticated.
+
+
+## Dev notes
+
+### overmind
+
+So we have multiple processes, CouchDB and couchpup.
+
+Fly has process group features. But that's one VM per process, which is both
+expensive and unecessary. Plus, process groups are independently scalable, and
+we need 1:1 between couches and pups.
+
+overmind+procfiles is one of the solutions suggested by Fly. It's configured
+so that couchpup roughly behaves like a sidecar, and couch is the primary daemon.
