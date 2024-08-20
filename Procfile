@@ -1,2 +1,2 @@
 couch: /docker-entrypoint.sh
-pup: python3 -m couchpup
+pup: python3 -m couchpup run

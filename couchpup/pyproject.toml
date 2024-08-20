@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.11"
 chaise = "^0.2.0"
 anyio = "^4.4.0"
+trio = {version = "^0.26.2", optional = true}
 
 
 [build-system]

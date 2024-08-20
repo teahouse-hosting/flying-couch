@@ -1,3 +1,3 @@
 import couchpup
 
-couchpup.main()
+couchpup.entrypoint()
