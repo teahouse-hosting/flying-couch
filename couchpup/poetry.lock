@@ -24,7 +24,7 @@ trio = ["trio (>=0.23)"]
 name = "attrs"
 version = "24.2.0"
 description = "Classes Without Boilerplate"
-optional = true
+optional = false
 python-versions = ">=3.7"
 files = [
     {file = "attrs-24.2.0-py3-none-any.whl", hash = "sha256:81921eb96de3191c8258c199618104dd27ac608d9366f5e35d011eae1867ede2"},
@@ -300,6 +300,26 @@ files = [
 ]
 
 [[package]]
+name = "svcs"
+version = "24.1.0"
+description = "A Flexible Service Locator"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "svcs-24.1.0-py3-none-any.whl", hash = "sha256:f050f4a6fcf163aa3a5d5e17b66bbf5efa3ed2164018aebecd70fc27794ecf6b"},
+    {file = "svcs-24.1.0.tar.gz", hash = "sha256:7419980475dd6b8e256e072c895c84cfe40d4da1ee944145f98724f2985dfd1f"},
+]
+
+[package.dependencies]
+attrs = ">=21.3.0"
+
+[package.extras]
+dev = ["httpx", "svcs[tests,typing]", "tox (>4)"]
+docs = ["aiohttp", "fastapi", "flask", "furo (>=2023.8.17)", "httpx", "myst-parser", "pyramid", "pytest", "sphinx (>=7.2.2)", "sphinx-copybutton", "sphinx-design", "sphinx-notfound-page", "sphinxext-opengraph", "sqlalchemy", "starlette", "sybil"]
+tests = ["pytest", "pytest-asyncio", "sybil (>=6)", "typing-extensions"]
+typing = ["aiohttp", "fastapi", "flask", "mypy (>=1.4)", "pyramid", "starlette"]
+
+[[package]]
 name = "trio"
 version = "0.26.2"
 description = "A friendly Python library for async concurrency and I/O"
@@ -321,4 +341,4 @@ sortedcontainers = "*"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "555c00be7deecb22146ad80559030d2cd7e8b5fbb0b49c9c6e82f3e338f15f8c"
+content-hash = "76fa48c70319136f17e226c516bd77577d564cd7bdd3ab9fed69e5a61b439f66"

@@ -1,11 +1,23 @@
+"""
+Watches CouchDB and makes sure its up-to-date with fly.io
+"""
+
 import argparse
 import importlib.util
 import logging
+import random
 
 import anyio
 
 
-async def run(args): ...
+async def cron(args):
+    """
+    Runs continuously, periodically checking for updates
+    """
+    while True:
+        ...
+        skew_range = args.period * args.skew
+        await anyio.sleep(args.period + random.uniform(-skew_range, +skew_range))
 
 
 def _arg_parser():
@@ -23,8 +35,22 @@ def _arg_parser():
 
     subparsers = parser.add_subparsers(title="Subcommands")
 
-    runp = subparsers.add_parser("run", help=run.__doc__)
-    runp.set_defaults(func=run)
+    cronp = subparsers.add_parser("cron", help=cron.__doc__)
+    cronp.add_argument(
+        "--period",
+        type=int,
+        default=60,
+        metavar="S",
+        help="Frequency of updates in seconds (Default: %(default)s)",
+    )
+    cronp.add_argument(
+        "--skew",
+        type=float,
+        default=0.1,
+        metavar="F",
+        help="Amount to vary frequency, as a fraction (Default: %(default)s)",
+    )
+    cronp.set_defaults(func=cron)
 
     return parser
 

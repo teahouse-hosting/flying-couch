@@ -13,7 +13,7 @@ RUN --mount=type=tmpfs,target=/var/lib/apt --mount=type=tmpfs,target=/tmp \
 
 COPY --chown=couchdb:couchdb 10-single-node.ini /opt/couchdb/etc/default.d/
 COPY --from=couchpup /app/dist/couchpup-*.whl /tmp
-RUN pip install --break-system-packages /tmp/couchpup-*.whl
+RUN pip install --no-cache-dir --break-system-packages /tmp/couchpup-*.whl
 
 RUN --mount=type=tmpfs,target=/tmp \
     curl -L https://github.com/DarthSim/overmind/releases/download/v2.5.1/overmind-v2.5.1-linux-amd64.gz | gunzip > /tmp/overmind && \
