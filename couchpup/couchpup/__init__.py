@@ -2,6 +2,8 @@
 Watches CouchDB and makes sure its up-to-date with fly.io
 """
 
+import os
+
 import argparse
 import importlib.util
 import logging
@@ -9,15 +11,23 @@ import random
 
 import anyio
 
+from .core import do_a_sync
+from .syncer import Syncer
+from .flyio import FlyClient
+
 
 async def cron(args):
     """
     Runs continuously, periodically checking for updates
     """
-    while True:
-        ...
-        skew_range = args.period * args.skew
-        await anyio.sleep(args.period + random.uniform(-skew_range, +skew_range))
+    syncer = Syncer(os.environ["COUCHDB_USER"], os.environ["COUCHDB_PASSWORD"])
+    flyio = FlyClient()
+
+    async with syncer:
+        while True:
+            await do_a_sync(syncer, flyio)
+            skew_range = args.period * args.skew
+            await anyio.sleep(args.period + random.uniform(-skew_range, +skew_range))
 
 
 def _arg_parser():

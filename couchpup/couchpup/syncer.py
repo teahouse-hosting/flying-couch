@@ -86,8 +86,7 @@ class Syncer:
         """
         Add a replication, or update an existing one
         """
-        if target._doc is not None:
-            return
+
         repl = self.session[
             "_replicator"
         ]  # Don't need to check it, it definitely exists
@@ -97,10 +96,12 @@ class Syncer:
         )  # Copy auth, port, protocol
         to_url = httpx.URL(self.url, path=target.path)
 
+        # TODO: Short circuit if target._doc is set
+
         try:
             await repl.attempt_put(
                 chaise.dictful.Document(
-                    source=from_url, target=to_url, create_target=True, continuous=True
+                    source=from_url, target=to_url, create_target=False, continuous=True
                 ),
                 docid,
             )
