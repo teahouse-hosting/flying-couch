@@ -88,19 +88,21 @@ class Syncer:
 
         repl = self.session["_replicator"]  # No need to check, definitely exists
         docid = DOC_FORMAT.format(ip=target.host, db=target.path.strip("/"))
-        from_url = str(
-            httpx.URL(self.url, host=target.host, path=target.path)
-        )  # Copy auth, port, protocol
-        to_url = str(httpx.URL(self.url, path=target.path))
+        # Copy auth, port, protocol
+        from_url = httpx.URL(self.url, host=target.host, path=target.path)
+        to_url = httpx.URL(self.url, path=target.path)
 
         # TODO: Short circuit if target._doc is set
 
-        LOG.debug("Adding replication", src=from_url, dst=to_url)
+        LOG.debug("Adding replication", src=repr(from_url), dst=repr(to_url))
 
         try:
             await repl.attempt_put(
                 chaise.dictful.Document(
-                    source=from_url, target=to_url, create_target=False, continuous=True
+                    source=str(from_url),
+                    target=str(to_url),
+                    create_target=False,
+                    continuous=True,
                 ),
                 docid,
             )
@@ -108,5 +110,5 @@ class Syncer:
             # Already exists, update the existing document
             # This can be important if auth changes
             async for doc in repl.mutate(docid):
-                doc["source"] = from_url
-                doc["target"] = to_url
+                doc["source"] = str(from_url)
+                doc["target"] = str(to_url)

@@ -28,3 +28,8 @@ pause:
 # Unsuspend all machines
 resume:
   fly machine start $(fly machine list -q)
+
+# Launch a dev copy
+launch:
+  fly launch --copy-config --flycast --no-public-ips
+  fly secrets set COUCHDB_USER=admin COUCHDB_PASSWORD=admin
