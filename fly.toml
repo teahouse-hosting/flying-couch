@@ -31,3 +31,7 @@
   memory = '1gb'
   cpu_kind = 'shared'
   cpus = 1
+
+[[metrics]]
+  port = 5984
+  path = "/_node/_local/_prometheus"
