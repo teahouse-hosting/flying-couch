@@ -8,26 +8,47 @@ import argparse
 import importlib.util
 import logging
 import random
+import sys
 
 import anyio
+import httpx
+import structlog
 
 from .core import do_a_sync
 from .syncer import Syncer
-from .flyio import FlyClient
+from .flyio import LiveFlyClient
 
 
 async def cron(args):
     """
     Runs continuously, periodically checking for updates
     """
+    LOG = structlog.get_logger()
     syncer = Syncer(os.environ["COUCHDB_USER"], os.environ["COUCHDB_PASSWORD"])
-    flyio = FlyClient()
+    flyio = LiveFlyClient()
 
-    async with syncer:
-        while True:
-            await do_a_sync(syncer, flyio)
-            skew_range = args.period * args.skew
-            await anyio.sleep(args.period + random.uniform(-skew_range, +skew_range))
+    while True:
+        try:
+            async with syncer:
+                pass
+        except httpx.ConnectError:
+            pass
+        except Exception:
+            LOG.exception("Error waiting for couch")
+        else:
+            break
+        await anyio.sleep(1)
+
+    while True:
+        try:
+            async with syncer:
+                await do_a_sync(syncer, flyio)
+        except Exception:
+            LOG.exception("Error running a sync")
+        skew_range = args.period * args.skew
+        wait_time = args.period + random.uniform(-skew_range, +skew_range)
+        LOG.debug("Sleeping", seconds=wait_time)
+        await anyio.sleep(wait_time)
 
 
 def _arg_parser():
@@ -38,10 +59,10 @@ def _arg_parser():
         prog="couchpup",
         description=__doc__,
     )
-    parser.add_argument(
-        "--verbose", action="store_true", help="Enable verbose logging."
-    )
-    parser.set_defaults(func=usage)
+    # parser.add_argument(
+    #     "--verbose", action="store_true", help="Enable verbose logging."
+    # )
+    # parser.set_defaults(func=usage)
 
     subparsers = parser.add_subparsers(title="Subcommands")
 
@@ -68,9 +89,12 @@ def _arg_parser():
 async def main():
     args = _arg_parser().parse_args()
 
+    # TODO: Re-implement --verbose
+    # structlog.stdlib.recreate_defaults(log_level=0 if args.verbose else logging.INFO)
     logging.basicConfig(
-        level=logging.INFO if args.verbose else logging.WARNING,
+        level=logging.INFO,  # HTTPX is pretty verbose, this still shows every request made
         format="%(name)s %(levelname)s %(message)s",
+        stream=sys.stdout,
     )
 
     await args.func(args)

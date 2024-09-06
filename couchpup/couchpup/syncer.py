@@ -9,8 +9,10 @@ import typing
 import chaise.dictful
 import chaise.helpers
 import httpx
+import structlog
 
 from . import couch
+
 
 DOC_FORMAT = "pup_{ip}_{db}"
 DOC_PARSE = re.compile(r"^pup_(?P<ip>.*?)_(?P<db>.*)$")
@@ -39,7 +41,7 @@ class Syncer:
     async def __aenter__(self):
         self.session = await couch.ConstantPool(self.url).session()
         try:
-            self.session.create_db("_replicator")
+            await self.session.create_db("_replicator")
         except chaise.Conflict:
             pass
         return self
@@ -53,7 +55,7 @@ class Syncer:
 
         Does not include any special databases (_users, _replicator, etc).
         """
-        for db in self.session.iter_dbs():
+        async for db in self.session.iter_dbs():
             if not db.startswith("_"):
                 yield db
 
@@ -61,10 +63,8 @@ class Syncer:
         """
         List of every host/db we're pulling from
         """
-        repl = self.session[
-            "_replicator"
-        ]  # Don't need to check it, it definitely exists
-        for docref in repl.iter_all_docs(include_docs=True):
+        repl = self.session["_replicator"]  # No need to check, definitely exists
+        async for docref in repl.iter_all_docs(include_docs=True):
             doc = await docref.doc()
             target = httpx.URL(doc["source"])
             yield SyncTarget(host=target.host, path=target.path, _doc=doc)
@@ -73,9 +73,7 @@ class Syncer:
         """
         Remove a replication
         """
-        repl = self.session[
-            "_replicator"
-        ]  # Don't need to check it, it definitely exists
+        repl = self.session["_replicator"]  # No need to check, definitely exists
         try:
             await repl.attempt_delete(target._doc)
         except (chaise.Missing, chaise.Deleted):
@@ -86,17 +84,18 @@ class Syncer:
         """
         Add a replication, or update an existing one
         """
+        LOG = structlog.get_logger()
 
-        repl = self.session[
-            "_replicator"
-        ]  # Don't need to check it, it definitely exists
+        repl = self.session["_replicator"]  # No need to check, definitely exists
         docid = DOC_FORMAT.format(ip=target.host, db=target.path.strip("/"))
-        from_url = httpx.URL(
-            self.url, host=target.host, path=target.path
+        from_url = str(
+            httpx.URL(self.url, host=target.host, path=target.path)
         )  # Copy auth, port, protocol
-        to_url = httpx.URL(self.url, path=target.path)
+        to_url = str(httpx.URL(self.url, path=target.path))
 
         # TODO: Short circuit if target._doc is set
+
+        LOG.debug("Adding replication", src=from_url, dst=to_url)
 
         try:
             await repl.attempt_put(

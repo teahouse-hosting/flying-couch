@@ -1,3 +1,6 @@
 import couchpup
 
-couchpup.entrypoint()
+try:
+    couchpup.entrypoint()
+except KeyboardInterrupt:
+    pass

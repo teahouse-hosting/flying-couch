@@ -7,26 +7,27 @@
 # primary_region = '...'
 
 [build]
-  dockerfile = "Dockerfile"
+  dockerfile = 'Dockerfile'
+
+[[mounts]]
+  source = 'cushion'
+  destination = '/opt/couchdb/data'
 
 [http_service]
-  processes = ['app']
   internal_port = 5984
-  force_https = false  # flycast is http only
-  # We don't support auto scaling
   auto_stop_machines = 'off'
   auto_start_machines = false
   min_machines_running = 2
+  processes = ['app']
 
+  [[http_service.checks]]
+    interval = '30s'
+    timeout = '5s'
+    grace_period = '10s'
+    method = 'GET'
+    path = '/_up'
 
-[[http_service.checks]]
-  grace_period = "10s"
-  interval = "30s"
-  method = "GET"
-  timeout = "5s"
-  path = "/_up"
-
-
-[mounts]
-  source = "couch-data"
-  destination = "/opt/couchdb/data"
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1

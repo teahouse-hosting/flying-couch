@@ -23,6 +23,9 @@ class LiveFlyClient:
         """
         Uses fly envvars and fly internal DNS to find app peers.
         """
+        import structlog
+
+        LOG = structlog.get_logger(__name__)
         # Could return ipaddress objects, but the other end is just going to stuff
         # them into URLs
         app = os.environ["FLY_APP_NAME"]
@@ -33,8 +36,21 @@ class LiveFlyClient:
             my_ips.add(os.environ["FLY_PRIVATE_IP"])
 
         for gai in await anyio.getaddrinfo(f"{app}.internal", None):
+            LOG.debug("Got info", info=gai)
             match gai:
                 case (AddressFamily.AF_INET, SocketKind.SOCK_STREAM, _, _, (addr, _)):
+                    if addr not in my_ips:
+                        yield addr
+                case (
+                    AddressFamily.AF_INET6,
+                    SocketKind.SOCK_STREAM,
+                    _,
+                    _,
+                    (
+                        addr,
+                        _,
+                    ),
+                ):
                     if addr not in my_ips:
                         yield addr
                 case (

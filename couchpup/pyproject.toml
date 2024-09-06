@@ -7,11 +7,15 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-chaise = "^0.2.0"
+chaise = {git = "https://github.com/teahouse-hosting/chaise.git", rev = "db-funcs"}
 anyio = "^4.4.0"
 trio = {version = "^0.26.2", optional = true}
 svcs = "^24.1.0"
+structlog = "^24.4.0"
 
+
+[tool.poetry.group.dev.dependencies]
+rich = "^13.8.0"
 
 [build-system]
 requires = ["poetry-core"]
