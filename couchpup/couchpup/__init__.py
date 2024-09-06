@@ -16,7 +16,7 @@ import structlog
 
 from .core import do_a_sync
 from .syncer import Syncer
-from .flyio import LiveFlyClient
+from .flyio import LiveFlyClient_Hostnames
 
 
 async def cron(args):
@@ -25,7 +25,7 @@ async def cron(args):
     """
     LOG = structlog.get_logger()
     syncer = Syncer(os.environ["COUCHDB_USER"], os.environ["COUCHDB_PASSWORD"])
-    flyio = LiveFlyClient()
+    flyio = LiveFlyClient_Hostnames()
 
     while True:
         try:

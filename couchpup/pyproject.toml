@@ -12,6 +12,7 @@ anyio = "^4.4.0"
 trio = {version = "^0.26.2", optional = true}
 svcs = "^24.1.0"
 structlog = "^24.4.0"
+dnspython = "^2.6.1"
 
 
 [tool.poetry.group.dev.dependencies]
