@@ -34,4 +34,4 @@
 
 [[metrics]]
   port = 17986
-  path = "/_node/_local/_prometheus"
+  path = '/_node/_local/_prometheus'
